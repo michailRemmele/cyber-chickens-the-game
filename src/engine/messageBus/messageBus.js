@@ -83,7 +83,7 @@ class MessageBus {
       });
       return storage;
     }, {});
-    this._stashedMessages = [];
+    this._stashedMessages.length = 0;
   }
 
   sendDelayed() {
@@ -94,7 +94,7 @@ class MessageBus {
     this._delayedMessages.forEach((message) => {
       this.send(message);
     });
-    this._delayedMessages = [];
+    this._delayedMessages.length = 0;
   }
 
   clear() {
@@ -103,8 +103,8 @@ class MessageBus {
 
   reset() {
     this._messages = {};
-    this._stashedMessages = [];
-    this._delayedMessages = [];
+    this._stashedMessages.length = 0;
+    this._delayedMessages.length = 0;
   }
 }
 

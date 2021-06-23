@@ -1,6 +1,16 @@
 const COMPONENT_ADDED = 'COMPONENT_ADDED';
 const COMPONENT_REMOVED = 'COMPONENT_REMOVED';
 
+const findAncestor = (gameObject) => {
+  const parent = gameObject.getParent();
+
+  if (parent) {
+    return findAncestor(parent);
+  }
+
+  return gameObject;
+};
+
 class GameObject {
   constructor(id) {
     this._id = id;
@@ -24,16 +34,6 @@ class GameObject {
   }
 
   getAncestor() {
-    const findAncestor = (gameObject) => {
-      const parent = gameObject.getParent();
-
-      if (parent) {
-        return findAncestor(parent);
-      }
-
-      return gameObject;
-    };
-
     return findAncestor(this);
   }
 
@@ -114,7 +114,7 @@ class GameObject {
   }
 
   clearSubscriptions() {
-    this._subscribers = [];
+    this._subscribers.length = 0;
   }
 }
 

@@ -78,7 +78,7 @@ class UiBridge extends Processor {
       messageBus.send(message, true);
     });
 
-    this._messageQueue = [];
+    this._messageQueue.length = 0;
 
     this._actionsQueue.forEach((action) => {
       action({
@@ -90,7 +90,7 @@ class UiBridge extends Processor {
       });
     });
 
-    this._actionsQueue = [];
+    this._actionsQueue.length = 0;
   }
 }
 

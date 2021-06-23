@@ -109,7 +109,7 @@ class RenderProcessor extends Processor {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     this._buffer = null;
-    this._shaders = [];
+    this._shaders.length = 0;
     this.program = null;
     this.textures = null;
     this.gl = null;

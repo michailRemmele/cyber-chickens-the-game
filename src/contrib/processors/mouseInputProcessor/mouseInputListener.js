@@ -27,7 +27,7 @@ class MouseInputListener {
   }
 
   clearFiredEvents() {
-    this._firedEvents = [];
+    this._firedEvents.length = 0;
   }
 }
 

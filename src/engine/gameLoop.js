@@ -2,7 +2,7 @@ import IOC from './ioc/ioc';
 import MessageBus from './messageBus/messageBus';
 
 import { SCENE_PROVIDER_KEY_NAME, SECTIONS } from 'engine/consts/global';
-const MS_PER_UPDATE = 1000 / 60;
+const MS_PER_UPDATE = 1000 / 50;
 
 class GameLoop {
   constructor() {
@@ -10,6 +10,8 @@ class GameLoop {
 
     this.sceneProvider = IOC.resolve(SCENE_PROVIDER_KEY_NAME);
     this.messageBus = new MessageBus();
+
+    this.bindedTick = this.tick.bind(this);
   }
 
   _processSection(sectionName, options) {
@@ -45,28 +47,31 @@ class GameLoop {
     this.messageBus.restore();
   }
 
+  tick() {
+    const current = performance.now();
+
+    const elapsed = current - this.previous;
+    this.lag += elapsed;
+
+    this.messageBus.restore();
+    this.messageBus.sendDelayed();
+
+    this._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME);
+    this._gameStateUpdate();
+    this._processSection(SECTIONS.RENDERING_SECTION_NAME, { deltaTime: elapsed });
+
+    this.messageBus.clear();
+
+    this.previous = current;
+
+    this.gameLoopId = requestAnimationFrame(this.bindedTick);
+  }
+
   run() {
-    this.previous = undefined;
-    this.lag = MS_PER_UPDATE;
+    this.previous = performance.now();
+    this.lag = 0;
 
-    const that = this;
-    this.gameLoopId = requestAnimationFrame(function tick(current) {
-      that.previous = that.previous || current;
-
-      const elapsed = current - that.previous;
-      that.previous = current;
-      that.lag += elapsed;
-
-      that.messageBus.restore();
-      that.messageBus.sendDelayed();
-
-      that._processSection(SECTIONS.EVENT_PROCESS_SECTION_NAME);
-      that._gameStateUpdate();
-      that._processSection(SECTIONS.RENDERING_SECTION_NAME, { deltaTime: elapsed });
-
-      that.messageBus.clear();
-      that.gameLoopId = requestAnimationFrame(tick);
-    });
+    this.gameLoopId = requestAnimationFrame(this.bindedTick);
   }
 
   stop() {
